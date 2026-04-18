@@ -14,7 +14,8 @@ const app = express();
 const corsOptions = {
     origin: [
         'http://localhost:5173', // Local React (Vite)
-        process.env.FRONTEND_URL  // Production Frontend
+        'https://final-hackatton.vercel.app', // Explicit Production Frontend without slash
+        process.env.FRONTEND_URL  // Env variable fallback
     ],
     credentials: true,
 };
