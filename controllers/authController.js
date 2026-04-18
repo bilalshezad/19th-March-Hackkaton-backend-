@@ -25,6 +25,7 @@ exports.signup = async (req, res) => {
             name,
             email,
             password,
+            role, // Fixed: Save the role
             verificationCode,
         });
 
@@ -38,8 +39,9 @@ exports.signup = async (req, res) => {
             return res.status(201).json({ message: 'Verification code sent to email' });
         } catch (mailError) {
             console.error('Nodemailer Error:', mailError);
-            // Even if email fails, user is created. We might want to handle this differently.
-            return res.status(500).json({ message: 'User created but email could not be sent. Please check your SMTP settings.' });
+            // Delete user if email fails so they can try again once SMTP is fixed
+            await User.findByIdAndDelete(user._id);
+            return res.status(500).json({ message: 'Email could not be sent. Please check your SMTP settings.' });
         }
     } catch (error) {
         console.error('Signup Error:', error);
@@ -76,11 +78,6 @@ exports.login = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
-            // Strict check: Name must also match
-            if (user.name !== name) {
-                return res.status(401).json({ message: 'Name does not match our records' });
-            }
-
             if (!user.isVerified) {
                 return res.status(401).json({ message: 'Please verify your email first' });
             }

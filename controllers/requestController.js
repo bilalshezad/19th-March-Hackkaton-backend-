@@ -26,15 +26,15 @@ exports.createRequest = async (req, res) => {
             createdBy: req.user.id,
         });
 
-        // NOTIFICATION: Alert all users about new request (Simplified)
-        const allUsers = await User.find({ _id: { $ne: req.user.id } }).limit(5); // Limit for performance in demo
-        for (const user of allUsers) {
-            await Notification.create({
+        // NOTIFICATION: Alert all users about new request concurrently
+        const allUsers = await User.find({ _id: { $ne: req.user.id } });
+        await Promise.all(allUsers.map(user => 
+            Notification.create({
                 user: user._id,
                 message: `New request: ${title}`,
                 type: 'new_request'
-            });
-        }
+            })
+        ));
 
         res.status(201).json(request);
     } catch (error) {
