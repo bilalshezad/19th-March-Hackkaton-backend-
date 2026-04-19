@@ -11,11 +11,7 @@ connectDB();
 const app = express();
 
 app.use((req, res, next) => {
-    const allowedOrigins = ['https://final-hackatton.vercel.app', 'http://localhost:5173'];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
+    res.setHeader('Access-Control-Allow-Origin', 'https://final-hackatton.vercel.app');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
