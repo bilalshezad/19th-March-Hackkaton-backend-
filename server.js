@@ -1,6 +1,5 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -11,17 +10,21 @@ connectDB();
 
 const app = express();
 
-const corsOptions = {
-    origin: [
-        'http://localhost:5173', // Local React (Vite)
-        'https://final-hackatton.vercel.app', // Explicit Production Frontend without slash
-        process.env.FRONTEND_URL  // Env variable fallback
-    ],
-    credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options('/*splat', cors(corsOptions)); // Enable pre-flight for all routes (Express 5 syntax)
+app.use((req, res, next) => {
+    const allowedOrigins = ['https://final-hackatton.vercel.app', 'http://localhost:5173'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    next();
+});
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
