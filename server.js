@@ -1,12 +1,22 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const requestRoutes = require('./routes/requestRoutes');
 
 dotenv.config();
 connectDB();
+const corsOptions = {
+    origin: [
+        'http://localhost:5173', // Local React (Vite)
+        process.env.FRONTEND_URL  // Production Frontend
+    ],
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 const app = express();
 
