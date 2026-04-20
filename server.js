@@ -1,3 +1,4 @@
+const cors = require("cors");
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
@@ -9,6 +10,13 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+
+app.use(cors({
+  origin: "https://final-hackatton.vercel.app", // frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'https://final-hackatton.vercel.app');
